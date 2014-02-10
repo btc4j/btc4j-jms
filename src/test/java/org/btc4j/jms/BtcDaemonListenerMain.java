@@ -24,13 +24,27 @@
 
 package org.btc4j.jms;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 public class BtcDaemonListenerMain {
 	public static void main(String[] args) {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("btc4j-jms-test.xml");
-
+			JmsTemplate sender = (JmsTemplate) ctx.getBean("jsmTemplate");
+			sender.send("BTCAPI.HELP.GET", new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					Message message = session.createMessage();
+					message.setStringProperty("JSON", "hello");
+					return message;
+				}
+			});
 			ctx.close();
 		} catch (Throwable t) {
 			t.printStackTrace();

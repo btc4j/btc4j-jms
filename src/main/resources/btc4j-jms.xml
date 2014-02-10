@@ -39,7 +39,7 @@
 	<ctx:annotation-config />
 	<ctx:property-placeholder location="classpath:btc4j-jms.properties" />
 
-	<jms:listener-container connection-factory="jmsConnectionFactory">
+	<jms:listener-container connection-factory="cachingConnectionFactory">
 		<jms:listener destination="${queue.help}" ref="messageListener"
 			method="help" />
 		<jms:listener destination="${queue.stop}" ref="messageListener"
@@ -52,6 +52,11 @@
 			<bean class="org.btc4j.jms.BtcDaemonListener" />
 		</constructor-arg>
 	</bean>
+	
+	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory"
+		p:targetConnectionFactory-ref="jmsConnectionFactory" p:sessionCacheSize="20"
+		p:cacheConsumers="true" p:cacheProducers="false" p:reconnectOnException="true"
+		p:clientId="${jms.client}" />
 	
 	<bean id="jmsConnectionFactory"
 		class="org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter"

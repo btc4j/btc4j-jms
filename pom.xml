@@ -55,6 +55,7 @@
 		<maven.gpg.version>1.4</maven.gpg.version>
 		<btc4j.daemon.version>0.0.3</btc4j.daemon.version>
 		<spring.core.version>3.2.4.RELEASE</spring.core.version>
+		<jms.version>1.1</jms.version>
 		<junit.version>4.11</junit.version>
 	</properties>
 	<build>
