@@ -54,6 +54,7 @@
 		<maven.source.version>2.2.1</maven.source.version>
 		<maven.gpg.version>1.4</maven.gpg.version>
 		<btc4j.daemon.version>0.0.3</btc4j.daemon.version>
+		<spring.core.version>3.2.4.RELEASE</spring.core.version>
 		<junit.version>4.11</junit.version>
 	</properties>
 	<build>
@@ -129,6 +130,11 @@
 			<groupId>org.btc4j</groupId>
 			<artifactId>btc4j-daemon</artifactId>
 			<version>${btc4j.daemon.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring.core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
