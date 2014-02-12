@@ -2,10 +2,11 @@ Bitcoin Java JMS API
 ====================
 Open source JMS interface to bitcoind API.
 
-Development build status: [![Build Status](https://travis-ci.org/btc4j/btc4j-jms.png?branch=master)](https://travis-ci.org/btc4j/btc4j-jms)
-
 btc4j-jms uses:
 * [Bitcoin Java Daemon Wrapper (org.btc4j.daemon)] (http://btc4j.github.io/btc4j-daemon)
+* [Spring Framework (org.springframework)] (http://spring.io)
+* [The Java Message Service (JMS) API (javax.jms)] (http://www.oracle.com/technetwork/java/jms/index.html)
+  * The JMS runtime and client API dependencies in this project are omitted in the pom.xml, but any JMS server/implementation could be used. 
 
 Using btc4j-jms
 --------------

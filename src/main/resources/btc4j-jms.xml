@@ -38,21 +38,15 @@
 
 	<ctx:annotation-config />
 	<ctx:property-placeholder location="classpath:btc4j-jms.properties" />
+	<ctx:component-scan base-package="org.btc4j.jms" />
 
 	<jms:listener-container connection-factory="cachingConnectionFactory">
-		<jms:listener destination="${queue.help}" ref="messageListener"
-			method="help" />
-		<jms:listener destination="${queue.stop}" ref="messageListener"
-			method="stop" />
+		<jms:listener destination="${queue.jsonrpc}" ref="btcDaemonListener" method="invokeJsonRpc" />
+		<jms:listener destination="${queue.addmultisigaddress}" ref="btcDaemonListener" method="addMultiSignatureAddress" />
+		<jms:listener destination="${queue.help}" ref="btcDaemonListener" method="help" />
+		<jms:listener destination="${queue.stop}" ref="btcDaemonListener" method="stop" />
 	</jms:listener-container>
 
-	<bean id="messageListener"
-		class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
-		<constructor-arg>
-			<bean class="org.btc4j.jms.BtcDaemonListener" />
-		</constructor-arg>
-	</bean>
-	
 	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory"
 		p:targetConnectionFactory-ref="jmsConnectionFactory" p:sessionCacheSize="20"
 		p:cacheConsumers="true" p:cacheProducers="false" p:reconnectOnException="true"
@@ -68,7 +62,7 @@
 		<property name="jndiEnvironment">
 			<props>
 				<prop key="java.naming.factory.initial">${jndi.factory}</prop>
-				<prop key="java.naming.factory.url.pkgs">${jndi.pkg}</prop>
+				<prop key="java.naming.factory.url.pkgs">${jndi.pkgs}</prop>
 				<prop key="java.naming.provider.url">${jndi.url}</prop>
 				<prop key="java.naming.security.principal">${jndi.user}</prop>
 				<prop key="java.naming.security.credentials">${jndi.password}</prop>

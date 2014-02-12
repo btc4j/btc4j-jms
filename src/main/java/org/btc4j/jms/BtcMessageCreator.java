@@ -24,32 +24,32 @@
 
 package org.btc4j.jms;
 
-import java.net.URL;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TemporaryQueue;
+import javax.jms.TextMessage;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.jms.core.MessageCreator;
 
-@Component
-public class BtcDaemonListener {
-	@Autowired
-	private URL daemonUrl;
+public class BtcMessageCreator implements MessageCreator {
+	private String text = "";
+	private TemporaryQueue replyQueue = null;
 	
-	public String invokeJsonRpc(String message) {
-		System.out.println("invokeJsonRpc message: " + message);
-		return "invokeJsonRpc reply";
+	public BtcMessageCreator(String text) {
+		this.text = text;
 	}
 	
-	public void addMultiSignatureAddress(String message) {
-		System.out.println("addMultiSignatureAddress message: " + message);
+	public TemporaryQueue getReplyQueue() {
+		return replyQueue;
 	}
 	
-	public String help(String message) {
-		System.out.println("help message: " + message);
-		return "help reply";
-	}
-	
-	public String stop(String message) {
-		System.out.println("stop message: " + message);
-		return message;
+	@Override
+	public Message createMessage(Session session) throws JMSException {
+		replyQueue = session.createTemporaryQueue();
+		TextMessage request = session.createTextMessage();
+		request.setJMSReplyTo(replyQueue);
+		request.setText(text);
+		return request;
 	}
 }

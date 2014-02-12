@@ -24,32 +24,33 @@
 
 package org.btc4j.jms;
 
-import java.net.URL;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BtcDaemonListener {
+public class BtcDaemonCaller implements SessionCallback<String> {
 	@Autowired
-	private URL daemonUrl;
-	
-	public String invokeJsonRpc(String message) {
-		System.out.println("invokeJsonRpc message: " + message);
-		return "invokeJsonRpc reply";
+	private JmsTemplate jmsTemplate;
+
+	public String sendReceive(String destinationName, String payload) {
+		BtcMessageCreator messageCreator = new BtcMessageCreator(payload);
+		jmsTemplate.send(destinationName, messageCreator);
+		return String.valueOf(jmsTemplate.receive(messageCreator.getReplyQueue()));
+	} 
+
+	public void send(String destinationName, String payload) {
+		BtcMessageCreator messageCreator = new BtcMessageCreator(payload);
+		jmsTemplate.send(destinationName, messageCreator);
 	}
-	
-	public void addMultiSignatureAddress(String message) {
-		System.out.println("addMultiSignatureAddress message: " + message);
-	}
-	
-	public String help(String message) {
-		System.out.println("help message: " + message);
-		return "help reply";
-	}
-	
-	public String stop(String message) {
-		System.out.println("stop message: " + message);
-		return message;
+
+	@Override
+	public String doInJms(Session session) throws JMSException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -24,27 +24,38 @@
 
 package org.btc4j.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 public class BtcDaemonListenerMain {
 	public static void main(String[] args) {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("btc4j-jms-test.xml");
-			JmsTemplate sender = (JmsTemplate) ctx.getBean("jsmTemplate");
-			sender.send("BTCAPI.HELP.GET", new MessageCreator() {
+			BtcDaemonCaller caller = (BtcDaemonCaller) ctx.getBean("btcDaemonCaller");
+			caller.sendReceive("BTCAPI.JSON_RPC.INVOKE", "json request: BTCAPI.JSON_RPC.INVOKE");
+			/*
+			sender.send("BTCAPI.JSON_RPC.INVOKE", new MessageCreator() {
 				@Override
 				public Message createMessage(Session session) throws JMSException {
-					Message message = session.createMessage();
-					message.setStringProperty("JSON", "hello");
+					Message message = session.createTextMessage("json request: BTCAPI.JSON_RPC.INVOKE");
+					//message.se
 					return message;
 				}
 			});
+			System.out.println("reply message BTCAPI.JSON_RPC.INVOKE: " + sender.receive("BTCAPI.JSON_RPC.INVOKE"));
+			sender.send("BTCAPI.MULTISIGNATURE_ADDRESS.ADD", new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					return session.createTextMessage("json request: BTCAPI.MULTISIGNATURE_ADDRESS.ADD");
+				}
+			});
+			sender.send("BTCAPI.HELP.GET", new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					return session.createTextMessage("json request: BTCAPI.HELP.GET");
+				}
+			});
+			System.out.println("reply message BTCAPI.HELP.GET: " + sender.receive("BTCAPI.HELP.GET"));
+			*/
 			ctx.close();
 		} catch (Throwable t) {
 			t.printStackTrace();
