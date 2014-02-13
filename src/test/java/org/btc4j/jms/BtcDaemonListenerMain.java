@@ -24,12 +24,13 @@
 
 package org.btc4j.jms;
 
+import org.btc4j.jms.req.BtcDaemonCaller;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class BtcDaemonListenerMain {
 	public static void main(String[] args) {
 		try {
-			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("btc4j-jms.xml");
+			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("btc4j-jms-test.xml");
 			BtcDaemonCaller caller = (BtcDaemonCaller) ctx.getBean("btcDaemonCaller");
 			System.out.println("reply message BTCAPI.JSON_RPC.INVOKE: " + caller.sendReceive("BTCAPI.JSON_RPC.INVOKE", "json request: BTCAPI.JSON_RPC.INVOKE"));
 			ctx.close();

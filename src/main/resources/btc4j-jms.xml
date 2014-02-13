@@ -40,9 +40,6 @@
 	<ctx:property-placeholder location="classpath:btc4j-jms.properties" />
 	<ctx:component-scan base-package="org.btc4j.jms" />
 	
-	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate"
-		p:connectionFactory-ref="cachingConnectionFactory" p:receiveTimeout="${jms.timeout}" />
-
 	<jms:listener-container connection-factory="cachingConnectionFactory">
 		<jms:listener destination="${queue.jsonrpc}" ref="btcDaemonListener" method="invokeJsonRpc" />
 		<jms:listener destination="${queue.addmultisigaddress}" ref="btcDaemonListener" method="addMultiSignatureAddress" />
@@ -52,7 +49,7 @@
 
 	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory"
 		p:targetConnectionFactory-ref="jmsConnectionFactory" p:sessionCacheSize="${jms.cache}"
-		p:cacheConsumers="true" p:cacheProducers="true" p:reconnectOnException="true"
+		p:cacheConsumers="true" p:cacheProducers="false" p:reconnectOnException="true"
 		p:clientId="${jms.client}" />
 	
 	<bean id="jmsConnectionFactory"

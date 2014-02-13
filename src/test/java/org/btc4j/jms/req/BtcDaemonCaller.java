@@ -22,37 +22,43 @@
  SOFTWARE.
  */
 
-package org.btc4j.jms;
+package org.btc4j.jms.req;
 
-import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.TemporaryQueue;
 
-import org.springframework.jms.core.MessageCreator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.SessionCallback;
+import org.springframework.stereotype.Component;
 
-public class BtcMessageCreator implements MessageCreator {
-	private Destination replyDestination = null;
-	private String payload = "";
-	
-	public BtcMessageCreator(String payload) {
-		this.payload = payload;
+@Component
+public class BtcDaemonCaller {
+	@Autowired
+	private JmsTemplate jmsTemplate = null;
+
+	public String sendReceive(String destinationName) {
+		return sendReceive(destinationName, "");
 	}
 	
-	public BtcMessageCreator(String payload, Destination replyDestination) {
-		this(payload);
-		this.replyDestination = replyDestination;
+	public String sendReceive(final String destinationName, final String payload) {
+		return jmsTemplate.execute(new SessionCallback<String>() {
+			@Override
+			public String doInJms(Session session) throws JMSException {
+				TemporaryQueue replyQueue = session.createTemporaryQueue();
+				BtcMessageCreator messageCreator = new BtcMessageCreator(payload, replyQueue);
+				jmsTemplate.send(destinationName, messageCreator);
+				return String.valueOf(jmsTemplate.receiveAndConvert(replyQueue));
+			}
+		});
+	} 
+	
+	public void send(String destinationName) {
+		send(destinationName, "");
 	}
 	
-	@Override
-	public Message createMessage(Session session) throws JMSException {
-		TextMessage request = session.createTextMessage();
-		//request.setJMS
-		if (replyDestination != null) {
-			request.setJMSReplyTo(replyDestination);
-		}
-		request.setText(payload);
-		return request;
+	public void send(String destinationName, String payload) {
+		jmsTemplate.send(destinationName, new BtcMessageCreator(payload));
 	}
 }
