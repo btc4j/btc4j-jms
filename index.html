@@ -36,12 +36,18 @@
 
 <p>Open source JMS interface to bitcoind API.</p>
 
-<p>Development build status: <a href="https://travis-ci.org/btc4j/btc4j-jms"><img src="https://travis-ci.org/btc4j/btc4j-jms.png?branch=master" alt="Build Status"></a></p>
-
 <p>btc4j-jms uses:</p>
 
 <ul>
 <li><a href="http://btc4j.github.io/btc4j-daemon">Bitcoin Java Daemon Wrapper (org.btc4j.daemon)</a></li>
+<li><a href="http://spring.io">Spring Framework (org.springframework)</a></li>
+<li>
+<a href="http://www.oracle.com/technetwork/java/jms/index.html">The Java Message Service (JMS) API (javax.jms)</a>
+
+<ul>
+<li>The JMS runtime and client API dependencies in this project are omitted in the pom.xml, but any JMS server/implementation could be used. </li>
+</ul>
+</li>
 </ul><h2>
 <a name="using-btc4j-jms" class="anchor" href="#using-btc4j-jms"><span class="octicon octicon-link"></span></a>Using btc4j-jms</h2>
 
