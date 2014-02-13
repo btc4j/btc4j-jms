@@ -48,7 +48,6 @@ public class BtcMessageCreator implements MessageCreator {
 	@Override
 	public Message createMessage(Session session) throws JMSException {
 		TextMessage request = session.createTextMessage();
-		//request.setJMS
 		if (replyDestination != null) {
 			request.setJMSReplyTo(replyDestination);
 		}

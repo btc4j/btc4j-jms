@@ -28,24 +28,35 @@
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:ctx="http://www.springframework.org/schema/context"
 	xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/jms
-		http://www.springframework.org/schema/jms/spring-jms.xsd">
+		http://www.springframework.org/schema/jms/spring-jms.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<ctx:annotation-config />
 	<ctx:property-placeholder location="classpath:btc4j-jms.properties" />
 	<ctx:component-scan base-package="org.btc4j.jms" />
 	
-	<jms:listener-container connection-factory="cachingConnectionFactory">
+	<jms:listener-container connection-factory="cachingConnectionFactory" concurrency="${jms.concurrency}"
+		task-executor="executor" client-id="${jms.client}">
 		<jms:listener destination="${queue.jsonrpc}" ref="btcDaemonListener" method="invokeJsonRpc" />
 		<jms:listener destination="${queue.addmultisigaddress}" ref="btcDaemonListener" method="addMultiSignatureAddress" />
 		<jms:listener destination="${queue.help}" ref="btcDaemonListener" method="help" />
 		<jms:listener destination="${queue.stop}" ref="btcDaemonListener" method="stop" />
 	</jms:listener-container>
+	
+	<task:executor id="executor" pool-size="${jms.pool}" queue-capacity="${jms.capacity}" />
+	
+	<util:properties id="jndiConfiguration" location="classpath:btc4j-jndi.properties"/>	
 
 	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory"
 		p:targetConnectionFactory-ref="jmsConnectionFactory" p:sessionCacheSize="${jms.cache}"
@@ -54,21 +65,11 @@
 	
 	<bean id="jmsConnectionFactory"
 		class="org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter"
-		p:targetConnectionFactory-ref="jndiConnectionFactory" p:username="${jndi.user}"
-		p:password="${jndi.password}" />
+		p:targetConnectionFactory-ref="jndiConnectionFactory" p:username="${jms.user}"
+		p:password="${jms.password}" />
 
 	<bean id="jndiConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean"
-		p:jndiName="QueueConnectionFactory">
-		<property name="jndiEnvironment">
-			<props>
-				<prop key="java.naming.factory.initial">${jndi.factory}</prop>
-				<prop key="java.naming.factory.url.pkgs">${jndi.pkgs}</prop>
-				<prop key="java.naming.provider.url">${jndi.url}</prop>
-				<prop key="java.naming.security.principal">${jndi.user}</prop>
-				<prop key="java.naming.security.credentials">${jndi.password}</prop>
-			</props>
-		</property>
-	</bean>
+		p:jndiName="${jms.factory}" p:jndiEnvironment-ref="jndiConfiguration" />
 	
 	<bean id="daemonUrl" class="java.net.URL">
 		<constructor-arg>
