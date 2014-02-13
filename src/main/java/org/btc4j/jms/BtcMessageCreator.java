@@ -24,32 +24,35 @@
 
 package org.btc4j.jms;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import javax.jms.TemporaryQueue;
 import javax.jms.TextMessage;
 
 import org.springframework.jms.core.MessageCreator;
 
 public class BtcMessageCreator implements MessageCreator {
-	private String text = "";
-	private TemporaryQueue replyQueue = null;
+	private Destination replyDestination = null;
+	private String payload = "";
 	
-	public BtcMessageCreator(String text) {
-		this.text = text;
+	public BtcMessageCreator(String payload) {
+		this.payload = payload;
 	}
 	
-	public TemporaryQueue getReplyQueue() {
-		return replyQueue;
+	public BtcMessageCreator(String payload, Destination replyDestination) {
+		this(payload);
+		this.replyDestination = replyDestination;
 	}
 	
 	@Override
 	public Message createMessage(Session session) throws JMSException {
-		replyQueue = session.createTemporaryQueue();
 		TextMessage request = session.createTextMessage();
-		request.setJMSReplyTo(replyQueue);
-		request.setText(text);
+		//request.setJMS
+		if (replyDestination != null) {
+			request.setJMSReplyTo(replyDestination);
+		}
+		request.setText(payload);
 		return request;
 	}
 }

@@ -26,6 +26,7 @@ package org.btc4j.jms;
 
 import javax.jms.JMSException;
 import javax.jms.Session;
+import javax.jms.TemporaryQueue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
@@ -33,24 +34,31 @@ import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BtcDaemonCaller implements SessionCallback<String> {
+public class BtcDaemonCaller {
 	@Autowired
-	private JmsTemplate jmsTemplate;
+	private JmsTemplate jmsTemplate = null;
 
-	public String sendReceive(String destinationName, String payload) {
-		BtcMessageCreator messageCreator = new BtcMessageCreator(payload);
-		jmsTemplate.send(destinationName, messageCreator);
-		return String.valueOf(jmsTemplate.receive(messageCreator.getReplyQueue()));
-	} 
-
-	public void send(String destinationName, String payload) {
-		BtcMessageCreator messageCreator = new BtcMessageCreator(payload);
-		jmsTemplate.send(destinationName, messageCreator);
+	public String sendReceive(String destinationName) {
+		return sendReceive(destinationName, "");
 	}
-
-	@Override
-	public String doInJms(Session session) throws JMSException {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public String sendReceive(final String destinationName, final String payload) {
+		return jmsTemplate.execute(new SessionCallback<String>() {
+			@Override
+			public String doInJms(Session session) throws JMSException {
+				TemporaryQueue replyQueue = session.createTemporaryQueue();
+				BtcMessageCreator messageCreator = new BtcMessageCreator(payload, replyQueue);
+				jmsTemplate.send(destinationName, messageCreator);
+				return String.valueOf(jmsTemplate.receiveAndConvert(replyQueue));
+			}
+		});
+	} 
+	
+	public void send(String destinationName) {
+		send(destinationName, "");
+	}
+	
+	public void send(String destinationName, String payload) {
+		jmsTemplate.send(destinationName, new BtcMessageCreator(payload));
 	}
 }

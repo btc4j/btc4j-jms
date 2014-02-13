@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class BtcDaemonListener {
 	@Autowired
-	private URL daemonUrl;
+	private URL daemonUrl = null;
 	
 	public String invokeJsonRpc(String message) {
 		System.out.println("invokeJsonRpc message: " + message);
