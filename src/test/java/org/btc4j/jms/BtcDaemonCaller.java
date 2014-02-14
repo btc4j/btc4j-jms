@@ -37,28 +37,28 @@ import org.springframework.stereotype.Component;
 public class BtcDaemonCaller {
 	@Autowired
 	private JmsTemplate jmsTemplate = null;
+	// TODO wire account/password from xml
 
-	public String sendReceive(String destinationName) {
-		return sendReceive(destinationName, "");
+	public String sendReceive(String destinationName, String account, String password) {
+		return sendReceive(destinationName, account, password, "");
 	}
 	
-	public String sendReceive(final String destinationName, final String payload) {
+	public String sendReceive(final String destinationName, final String account, final String password, final String payload) {
 		return jmsTemplate.execute(new SessionCallback<String>() {
 			@Override
 			public String doInJms(Session session) throws JMSException {
 				TemporaryQueue replyQueue = session.createTemporaryQueue();
-				BtcMessage message = new BtcMessage(payload, replyQueue);
-				jmsTemplate.convertAndSend(destinationName, message);
+				jmsTemplate.convertAndSend(destinationName, new BtcRequestMessage(account, password, payload, replyQueue));
 				return String.valueOf(jmsTemplate.receiveAndConvert(replyQueue));
 			}
 		});
 	} 
 	
-	public void send(String destinationName) {
-		send(destinationName, "");
+	public void send(String destinationName, String account, String password) {
+		send(destinationName, account, password, "");
 	}
 	
-	public void send(String destinationName, String payload) {
-		jmsTemplate.convertAndSend(destinationName, new BtcMessage(payload));
+	public void send(String destinationName, String account, String password, String payload) {
+		jmsTemplate.convertAndSend(destinationName, new BtcRequestMessage(account, password, payload));
 	}
 }

@@ -26,20 +26,40 @@ package org.btc4j.jms;
 
 import javax.jms.Destination;
 
-public class BtcMessage {
+public class BtcRequestMessage {
+	private String account = "";
+	private String password = "";
 	private String body = "";
 	private Destination replyDestination = null;
 	
-	public BtcMessage() {
+	public BtcRequestMessage(){
 	}
 	
-	public BtcMessage(String body) {
+	public BtcRequestMessage(String account, String password, String body) {
+		this.account = account;
+		this.password = password;
 		this.body = body;
 	}
 	
-	public BtcMessage(String text, Destination replyDestination) {
-		this(text);
+	public BtcRequestMessage(String account, String password, String body, Destination replyDestination) {
+		this(account, password, body);
 		this.replyDestination = replyDestination;
+	}
+	
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getBody() {
@@ -61,7 +81,9 @@ public class BtcMessage {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("BtcMessage [body=");
+		builder.append("BtcMessage [account=");
+		builder.append(account);
+		builder.append(", body=");
 		builder.append(body);
 		builder.append(", replyDestination=");
 		builder.append(replyDestination);

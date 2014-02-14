@@ -35,12 +35,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BtcMessageConverter implements MessageConverter {
+	
+	// TODO use only in listener, use message creator for caller
 
 	@Override
-	public Message toMessage(Object object, Session session) throws JMSException, MessageConversionException {
+	public TextMessage toMessage(Object object, Session session) throws JMSException, MessageConversionException {
 		TextMessage message = session.createTextMessage();
-		if ((object != null) && (object instanceof BtcMessage)) {
-			BtcMessage payload = (BtcMessage) object;
+		if ((object != null) && (object instanceof BtcRequestMessage)) {
+			BtcRequestMessage payload = (BtcRequestMessage) object;
 			message.setText(payload.getBody());
 			message.setJMSReplyTo(payload.getReplyDestination());
 		}
@@ -48,12 +50,12 @@ public class BtcMessageConverter implements MessageConverter {
 	}
 
 	@Override
-	public Object fromMessage(Message object) throws JMSException, MessageConversionException {
-		BtcMessage payload = new BtcMessage();
+	public BtcRequestMessage fromMessage(Message object) throws JMSException, MessageConversionException {
+		BtcRequestMessage payload = new BtcRequestMessage();
 		if ((object != null) && (object instanceof TextMessage)) {
 			TextMessage message = (TextMessage) object;
 			payload.setBody(message.getText());
-			payload.setReplyDestination(message.getJMSDestination());
+			payload.setReplyDestination(message.getJMSReplyTo());
 		}
 		return payload;
 	}

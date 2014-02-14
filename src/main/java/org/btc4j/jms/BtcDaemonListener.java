@@ -34,22 +34,22 @@ public class BtcDaemonListener {
 	@Autowired
 	private URL daemonUrl = null;
 	
-	public BtcMessage invokeJsonRpc(BtcMessage message) {
+	public String invokeJsonRpc(BtcRequestMessage message) {
 		System.out.println("invokeJsonRpc message: " + message);
-		return new BtcMessage("invokeJsonRpc reply");
+		return "invokeJsonRpc reply";
 	}
 	
-	public void addMultiSignatureAddress(BtcMessage message) {
+	public void addMultiSignatureAddress(BtcRequestMessage message) {
 		System.out.println("addMultiSignatureAddress message: " + message);
 	}
 	
-	public BtcMessage help(BtcMessage message) {
+	public String help(BtcRequestMessage message) {
 		System.out.println("help message: " + message);
-		return new BtcMessage("help reply");
+		return "help reply";
 	}
 	
-	public BtcMessage stop(BtcMessage message) {
+	public String stop(BtcRequestMessage message) {
 		System.out.println("stop message: " + message);
-		return message;
+		return message.getBody();
 	}
 }
