@@ -24,32 +24,48 @@
 
 package org.btc4j.jms;
 
-import java.net.URL;
+import javax.jms.Destination;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+public class BtcMessage {
+	private String body = "";
+	private Destination replyDestination = null;
+	
+	public BtcMessage() {
+	}
+	
+	public BtcMessage(String body) {
+		this.body = body;
+	}
+	
+	public BtcMessage(String text, Destination replyDestination) {
+		this(text);
+		this.replyDestination = replyDestination;
+	}
 
-@Component
-public class BtcDaemonListener {
-	@Autowired
-	private URL daemonUrl = null;
-	
-	public BtcMessage invokeJsonRpc(BtcMessage message) {
-		System.out.println("invokeJsonRpc message: " + message);
-		return new BtcMessage("invokeJsonRpc reply");
+	public String getBody() {
+		return body;
 	}
-	
-	public void addMultiSignatureAddress(BtcMessage message) {
-		System.out.println("addMultiSignatureAddress message: " + message);
+
+	public void setBody(String body) {
+		this.body = body;
 	}
-	
-	public BtcMessage help(BtcMessage message) {
-		System.out.println("help message: " + message);
-		return new BtcMessage("help reply");
+
+	public Destination getReplyDestination() {
+		return replyDestination;
 	}
-	
-	public BtcMessage stop(BtcMessage message) {
-		System.out.println("stop message: " + message);
-		return message;
+
+	public void setReplyDestination(Destination replyDestination) {
+		this.replyDestination = replyDestination;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("BtcMessage [body=");
+		builder.append(body);
+		builder.append(", replyDestination=");
+		builder.append(replyDestination);
+		builder.append("]");
+		return builder.toString();
 	}
 }

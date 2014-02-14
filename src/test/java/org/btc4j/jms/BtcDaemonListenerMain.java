@@ -24,7 +24,6 @@
 
 package org.btc4j.jms;
 
-import org.btc4j.jms.req.BtcDaemonCaller;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class BtcDaemonListenerMain {

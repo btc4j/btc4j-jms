@@ -22,43 +22,39 @@
  SOFTWARE.
  */
 
-package org.btc4j.jms.req;
+package org.btc4j.jms;
 
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Session;
-import javax.jms.TemporaryQueue;
+import javax.jms.TextMessage;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.SessionCallback;
+import org.springframework.jms.support.converter.MessageConversionException;
+import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BtcDaemonCaller {
-	@Autowired
-	private JmsTemplate jmsTemplate = null;
+public class BtcMessageConverter implements MessageConverter {
 
-	public String sendReceive(String destinationName) {
-		return sendReceive(destinationName, "");
+	@Override
+	public Message toMessage(Object object, Session session) throws JMSException, MessageConversionException {
+		TextMessage message = session.createTextMessage();
+		if ((object != null) && (object instanceof BtcMessage)) {
+			BtcMessage payload = (BtcMessage) object;
+			message.setText(payload.getBody());
+			message.setJMSReplyTo(payload.getReplyDestination());
+		}
+		return message;
 	}
-	
-	public String sendReceive(final String destinationName, final String payload) {
-		return jmsTemplate.execute(new SessionCallback<String>() {
-			@Override
-			public String doInJms(Session session) throws JMSException {
-				TemporaryQueue replyQueue = session.createTemporaryQueue();
-				BtcMessageCreator messageCreator = new BtcMessageCreator(payload, replyQueue);
-				jmsTemplate.send(destinationName, messageCreator);
-				return String.valueOf(jmsTemplate.receiveAndConvert(replyQueue));
-			}
-		});
-	} 
-	
-	public void send(String destinationName) {
-		send(destinationName, "");
-	}
-	
-	public void send(String destinationName, String payload) {
-		jmsTemplate.send(destinationName, new BtcMessageCreator(payload));
+
+	@Override
+	public Object fromMessage(Message object) throws JMSException, MessageConversionException {
+		BtcMessage payload = new BtcMessage();
+		if ((object != null) && (object instanceof TextMessage)) {
+			TextMessage message = (TextMessage) object;
+			payload.setBody(message.getText());
+			payload.setReplyDestination(message.getJMSDestination());
+		}
+		return payload;
 	}
 }
