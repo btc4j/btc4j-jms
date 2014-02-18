@@ -26,6 +26,7 @@ package org.btc4j.jms;
 
 import java.net.URL;
 
+import org.btc4j.core.BtcException;
 import org.btc4j.daemon.BtcDaemon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,25 +37,15 @@ public class BtcDaemonListener {
 	private URL daemonUrl = null;
 	
 	public String invokeJsonRpc(BtcRequestMessage request) {
+		BtcDaemon daemon = getDaemon(request.getAccount(), request.getPassword());
+		String id = "";
 		try {
-			return getDaemon(request.getAccount(), request.getPassword()).jsonInvoke(request.getBody());
-		} catch (Throwable t) {
-			return String.valueOf(t);
+			String body = request.getBody();
+			id = daemon.jsonId(body);
+			return daemon.jsonInvoke(body);
+		} catch (BtcException e) {
+			return daemon.jsonError(id, e.getCode(), e.getMessage());
 		}
-	}
-	
-	public void addMultiSignatureAddress(BtcRequestMessage request) {
-		System.out.println("addMultiSignatureAddress message: " + request);
-	}
-	
-	public String help(BtcRequestMessage request) {
-		System.out.println("help message: " + request);
-		return "help reply";
-	}
-	
-	public String stop(BtcRequestMessage request) {
-		System.out.println("stop message: " + request);
-		return request.getBody();
 	}
 	
 	private synchronized BtcDaemon getDaemon(String account, String password) {
