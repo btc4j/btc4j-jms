@@ -24,34 +24,21 @@
 
 package org.btc4j.jms;
 
-import javax.jms.Destination;
+import org.btc4j.core.BtcUtil;
 
 public class BtcRequestMessage {
+	public static final String BTCAPI_ACCOUNT = "btcapi:account";
+	public static final String BTCAPI_PASSWORD = "btcapi:password";
 	private String account = "";
 	private String password = "";
 	private String body = "";
-	private Destination replyDestination = null;
-	
-	public BtcRequestMessage(){
-	}
-	
-	public BtcRequestMessage(String account, String password, String body) {
-		this.account = account;
-		this.password = password;
-		this.body = body;
-	}
-	
-	public BtcRequestMessage(String account, String password, String body, Destination replyDestination) {
-		this(account, password, body);
-		this.replyDestination = replyDestination;
-	}
 	
 	public String getAccount() {
 		return account;
 	}
 
 	public void setAccount(String account) {
-		this.account = account;
+		this.account = BtcUtil.notNull(account);
 	}
 
 	public String getPassword() {
@@ -59,7 +46,7 @@ public class BtcRequestMessage {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = BtcUtil.notNull(password);
 	}
 
 	public String getBody() {
@@ -67,15 +54,7 @@ public class BtcRequestMessage {
 	}
 
 	public void setBody(String body) {
-		this.body = body;
-	}
-
-	public Destination getReplyDestination() {
-		return replyDestination;
-	}
-
-	public void setReplyDestination(Destination replyDestination) {
-		this.replyDestination = replyDestination;
+		this.body = BtcUtil.notNull(body);
 	}
 
 	@Override
@@ -85,8 +64,6 @@ public class BtcRequestMessage {
 		builder.append(account);
 		builder.append(", body=");
 		builder.append(body);
-		builder.append(", replyDestination=");
-		builder.append(replyDestination);
 		builder.append("]");
 		return builder.toString();
 	}

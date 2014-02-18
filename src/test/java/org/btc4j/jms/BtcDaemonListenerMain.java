@@ -30,8 +30,8 @@ public class BtcDaemonListenerMain {
 	public static void main(String[] args) {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("btc4j-jms-test.xml");
-			BtcDaemonCaller caller = (BtcDaemonCaller) ctx.getBean("btcDaemonCaller");
-			System.out.println("reply message BTCAPI.JSON_RPC.INVOKE: " + caller.sendReceive("BTCAPI.JSON_RPC.INVOKE", "", "", "json request: BTCAPI.JSON_RPC.INVOKE"));
+			BtcDaemonCaller caller = (BtcDaemonCaller) ctx.getBean("daemonCaller");
+			System.out.println(caller.sendReceive("BTCAPI.JSON_RPC.INVOKE", "{\"jsonrpc\":\"2.0\",\"method\":\"help\",\"params\":[\"getblock\"],\"id\":\"400ec474-5b67-4f82-bb65-4e10ee807d04\"}"));
 			ctx.close();
 		} catch (Throwable t) {
 			t.printStackTrace();

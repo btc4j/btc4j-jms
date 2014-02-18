@@ -49,9 +49,10 @@
 	<jms:listener-container connection-factory="cachingConnectionFactory" concurrency="${jms.concurrency}"
 		message-converter="btcMessageConverter" task-executor="executor" client-id="${jms.client}">
 		<jms:listener destination="${queue.jsonrpc}" ref="btcDaemonListener" method="invokeJsonRpc" />
-		<jms:listener destination="${queue.addmultisigaddress}" ref="btcDaemonListener" method="addMultiSignatureAddress" />
+		<!--
 		<jms:listener destination="${queue.help}" ref="btcDaemonListener" method="help" />
 		<jms:listener destination="${queue.stop}" ref="btcDaemonListener" method="stop" />
+		-->
 	</jms:listener-container>
 	
 	<task:executor id="executor" pool-size="${jms.pool}" queue-capacity="${jms.capacity}" />

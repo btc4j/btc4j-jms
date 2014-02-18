@@ -26,6 +26,7 @@ package org.btc4j.jms;
 
 import java.net.URL;
 
+import org.btc4j.daemon.BtcDaemon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,22 +35,29 @@ public class BtcDaemonListener {
 	@Autowired
 	private URL daemonUrl = null;
 	
-	public String invokeJsonRpc(BtcRequestMessage message) {
-		System.out.println("invokeJsonRpc message: " + message);
-		return "invokeJsonRpc reply";
+	public String invokeJsonRpc(BtcRequestMessage request) {
+		try {
+			return getDaemon(request.getAccount(), request.getPassword()).jsonInvoke(request.getBody());
+		} catch (Throwable t) {
+			return String.valueOf(t);
+		}
 	}
 	
-	public void addMultiSignatureAddress(BtcRequestMessage message) {
-		System.out.println("addMultiSignatureAddress message: " + message);
+	public void addMultiSignatureAddress(BtcRequestMessage request) {
+		System.out.println("addMultiSignatureAddress message: " + request);
 	}
 	
-	public String help(BtcRequestMessage message) {
-		System.out.println("help message: " + message);
+	public String help(BtcRequestMessage request) {
+		System.out.println("help message: " + request);
 		return "help reply";
 	}
 	
-	public String stop(BtcRequestMessage message) {
-		System.out.println("stop message: " + message);
-		return message.getBody();
+	public String stop(BtcRequestMessage request) {
+		System.out.println("stop message: " + request);
+		return request.getBody();
+	}
+	
+	private synchronized BtcDaemon getDaemon(String account, String password) {
+		return new BtcDaemon(daemonUrl, account, password);
 	}
 }

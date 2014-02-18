@@ -26,37 +26,25 @@ package org.btc4j.jms;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.springframework.jms.support.converter.MessageConversionException;
-import org.springframework.jms.support.converter.MessageConverter;
+import org.springframework.jms.support.converter.SimpleMessageConverter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BtcMessageConverter implements MessageConverter {
+public class BtcMessageConverter extends SimpleMessageConverter {
 	
-	// TODO use only in listener, use message creator for caller
-
 	@Override
-	public TextMessage toMessage(Object object, Session session) throws JMSException, MessageConversionException {
-		TextMessage message = session.createTextMessage();
-		if ((object != null) && (object instanceof BtcRequestMessage)) {
-			BtcRequestMessage payload = (BtcRequestMessage) object;
-			message.setText(payload.getBody());
-			message.setJMSReplyTo(payload.getReplyDestination());
-		}
-		return message;
-	}
-
-	@Override
-	public BtcRequestMessage fromMessage(Message object) throws JMSException, MessageConversionException {
-		BtcRequestMessage payload = new BtcRequestMessage();
+	public Object fromMessage(Message object) throws JMSException, MessageConversionException {
 		if ((object != null) && (object instanceof TextMessage)) {
+			BtcRequestMessage request = new BtcRequestMessage();
 			TextMessage message = (TextMessage) object;
-			payload.setBody(message.getText());
-			payload.setReplyDestination(message.getJMSReplyTo());
+			request.setBody(message.getText());
+			request.setAccount(message.getStringProperty(BtcRequestMessage.BTCAPI_ACCOUNT));
+			request.setPassword(message.getStringProperty(BtcRequestMessage.BTCAPI_PASSWORD));
+			return request; 
 		}
-		return payload;
+		return super.fromMessage(object);
 	}
 }

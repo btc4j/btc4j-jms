@@ -32,7 +32,9 @@
 
 	<import resource="classpath:btc4j-jms.xml"/>
 	
+	<bean id="daemonCaller" class="org.btc4j.jms.BtcDaemonCaller" p:jmsTemplate-ref="jmsTemplate" 
+		p:account="user" p:password="password" />
+		
 	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate" p:receiveTimeout="10000"
-		p:connectionFactory-ref="cachingConnectionFactory" p:messageConverter-ref="btcMessageConverter" />
-
+		p:connectionFactory-ref="cachingConnectionFactory" />
 </beans>

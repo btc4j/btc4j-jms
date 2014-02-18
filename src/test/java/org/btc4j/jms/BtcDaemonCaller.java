@@ -25,40 +25,71 @@
 package org.btc4j.jms;
 
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
+import javax.jms.TextMessage;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
-import org.springframework.stereotype.Component;
 
-@Component
 public class BtcDaemonCaller {
-	@Autowired
 	private JmsTemplate jmsTemplate = null;
-	// TODO wire account/password from xml
+	private String account = "";
+	private String password = "";
 
-	public String sendReceive(String destinationName, String account, String password) {
-		return sendReceive(destinationName, account, password, "");
+	public void setJmsTemplate(JmsTemplate jmsTemplate) {
+		this.jmsTemplate = jmsTemplate;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String sendReceive(String destination) {
+		return sendReceive(destination, "");
 	}
 	
-	public String sendReceive(final String destinationName, final String account, final String password, final String payload) {
+	public String sendReceive(final String destination, final String payload) {
 		return jmsTemplate.execute(new SessionCallback<String>() {
 			@Override
 			public String doInJms(Session session) throws JMSException {
-				TemporaryQueue replyQueue = session.createTemporaryQueue();
-				jmsTemplate.convertAndSend(destinationName, new BtcRequestMessage(account, password, payload, replyQueue));
+				final TemporaryQueue replyQueue = session.createTemporaryQueue();
+				jmsTemplate.send(destination, new MessageCreator() {
+					@Override
+					public Message createMessage(Session session) throws JMSException {
+						TextMessage message = session.createTextMessage();
+						message.setJMSReplyTo(replyQueue);
+						message.setText(payload);
+						message.setStringProperty("btcapi:account", account);
+						message.setStringProperty("btcapi:password", password);
+						return message;
+					}
+				});
 				return String.valueOf(jmsTemplate.receiveAndConvert(replyQueue));
 			}
 		});
 	} 
 	
-	public void send(String destinationName, String account, String password) {
-		send(destinationName, account, password, "");
+	public void send(String destination) {
+		send(destination, "");
 	}
 	
-	public void send(String destinationName, String account, String password, String payload) {
-		jmsTemplate.convertAndSend(destinationName, new BtcRequestMessage(account, password, payload));
+	public void send(String destination, final String payload) {
+		jmsTemplate.convertAndSend(destination, new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				TextMessage message = session.createTextMessage();
+				message.setText(payload);
+				message.setStringProperty("btcapi:account", account);
+				message.setStringProperty("btcapi:password", password);
+				return message;
+			}
+		});
 	}
 }
