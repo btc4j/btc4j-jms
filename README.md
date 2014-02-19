@@ -12,14 +12,10 @@ Using btc4j-jms
 --------------
 btc4j-jms is free software under [The MIT License (MIT)](http://opensource.org/licenses/MIT/ "The MIT License (MIT)"). It is maintained by Guillermo Gonzalez (ggonzalez@btc4j.org).
 
-Maven pom.xml dependency:
-```xml
-<dependency>
-	<groupId>org.btc4j</groupId>
-	<artifactId>btc4j-jms</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
-</dependency>
-```
+Download artifacts directly from https://github.com/btc4j/btc4j-jms/releases.
+
+Please note that you have to provide your JMS implementation jars in the classpath.
+
 Issues
 ------
 Report bugs, issues, or suggestions: https://github.com/btc4j/btc4j-jms/issues.
