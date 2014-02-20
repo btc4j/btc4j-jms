@@ -10,7 +10,7 @@ btc4j-jms uses:
 
 Using btc4j-jms
 --------------
-btc4j-jms is free software under [The MIT License (MIT)](http://opensource.org/licenses/MIT/ "The MIT License (MIT)"). It is maintained by ggbusto (ggbusto@gmx.us).
+btc4j-jms is free software under [The MIT License (MIT)](http://opensource.org/licenses/MIT/ "The MIT License (MIT)"). It is maintained by ggbusto@gmx.com.
 
 Download artifacts directly from https://github.com/btc4j/btc4j-jms/releases.
 
@@ -30,4 +30,4 @@ Donations
 ---------
 If you find the software useful and would like to make a donation, please send bitcoins to `1ACz6GKw3B6vjoYwGA2hnXDnbR5koFhC4j`.
 
-Copyright &copy; 2013, 2014 by ggbusto.
+Copyright &copy; 2013, 2014 by ggbusto@gmx.com.
